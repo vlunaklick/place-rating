@@ -3,25 +3,28 @@
 import { Place } from "./place"
 import useSupabaseClient from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
+import { useQuery } from "react-query"
+import { PlacesSkeletons } from "../skeleton"
 
 export const ListPlaces = () => {
   const supabase = useSupabaseClient()
-  const [places, setPlaces] = useState<any[] | null>([])
-
-  useEffect(() => {
-    const fetchPlaces = async () => {
+  const { data: places, isLoading, isError } = useQuery({ 
+    queryKey: ['posts'], 
+    queryFn: async () => {
       const { data } = await supabase.from('places').select().order('inserted_at', { ascending: false })
-      setPlaces(data)
-    }
+      return data
+    } 
+  })
 
-    fetchPlaces()
-  }, [])
-
-  if (!places) {
-    return null
+  if (isLoading) {
+    return <PlacesSkeletons />
   }
 
-  if (places.length === 0) {
+  if (isError) {
+    return <p>Hubo un error al cargar los lugares.</p>
+  }
+
+  if (places && places.length === 0) {
     return <p>No hay lugares agregados a la lista.</p>
   }
 
