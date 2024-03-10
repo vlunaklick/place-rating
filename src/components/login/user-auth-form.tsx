@@ -1,16 +1,15 @@
 "use client"
 
-import * as React from "react"
-
 import { cn } from "@/lib/utils"
 import { Button } from "../ui/button"
 import {IconBrandGoogle, IconFidgetSpinner } from '@tabler/icons-react'
 import useSupabaseClient from "@/lib/supabase/client"
+import { useState } from "react"
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const supabase = useSupabaseClient()
 
   async function onSubmit(event: React.SyntheticEvent) {

@@ -2,7 +2,6 @@
 
 import { Place } from "./place"
 import useSupabaseClient from "@/lib/supabase/client"
-import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 import { PlacesSkeletons } from "../skeleton"
 
