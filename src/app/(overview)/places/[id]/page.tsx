@@ -34,7 +34,6 @@ export default function Page({ params: {
   const { data: comments, isLoading: isLoadingComments, isError: isErrorComments } = useQuery({
     queryKey: ['places', id, 'comments'],
     queryFn: async () => {
-      console.log('fetching comments')
       const data = await supabase.from('comments').select(`
         *,
         profile:profiles(name, avatar_url)
