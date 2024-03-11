@@ -1,5 +1,3 @@
-'use client'
-
 import useSupabaseClient from "@/lib/supabase/client"
 import { useMutation, useQueryClient } from "react-query"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
@@ -10,20 +8,17 @@ import { IconDots, IconTrash } from "@tabler/icons-react"
 import { CommentsSkeletons } from "../skeleton"
 
 export const CommentsList = ({ comments, isLoading, isError }: { comments: any, isLoading: boolean, isError: boolean }) => {
-  const queryClient = useQueryClient()
   const supabase = useSupabaseClient()
+  const queryClient = useQueryClient()
 
   const deleteMutation = useMutation({
     mutationFn: async (comment: any) => {
       const { error } = await supabase.from('comments').delete().eq('id', comment.id)
-
-      if (error) return
+      if (error) return error
       return comment.place_id
     },
-    onSuccess: (placeId: any) => {
-      queryClient.invalidateQueries({
-        queryKey: ['places', placeId, 'comments']
-      })
+    onSuccess: async (placeId: number) => {
+      await queryClient.refetchQueries(['places'])
     }
   })
 
