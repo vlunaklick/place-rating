@@ -4,13 +4,14 @@ import { useQuery } from "react-query"
 import { buttonVariants } from "../ui/button"
 import { cn } from "@/lib/utils"
 import useSupabaseClient from "@/lib/supabase/client"
-import { IconBurger, IconMessage2 } from "@tabler/icons-react"
+import { IconBurger, IconLink, IconMessage2 } from "@tabler/icons-react"
 import { Skeleton } from "../ui/skeleton"
+import Link from "next/link"
 
 export const Place = ({ id, name, description, link }: { id: string, name: string, description: string, link: string }) => {
   const supabase = useSupabaseClient()
   const { data: countComments, isLoading: isLoadingCountComments, isError: isErrorCountComments } = useQuery({ 
-    queryKey: ['posts', id, 'comments'], 
+    queryKey: ['places', id, 'comments'], 
     queryFn: async () => {
       const data = await supabase.from('comments').select().eq('place_id', id)
       return data
@@ -18,7 +19,7 @@ export const Place = ({ id, name, description, link }: { id: string, name: strin
   })
 
   const { data: stars, isLoading: isLoadingStars, isError: isErrorStars } = useQuery({ 
-    queryKey: ['posts', id, 'stars'], 
+    queryKey: ['places', id, 'stars'], 
     queryFn: async () => {
       const data = await supabase.from('stars').select().eq('place_id', id)
       return data
@@ -28,10 +29,13 @@ export const Place = ({ id, name, description, link }: { id: string, name: strin
   return (
     <article className="flex flex-col gap-2 border p-4 rounded-md dark:border-neutral-700">
       <header className="flex gap-2 items-center">
-        <h3 className="text-xl font-bold mr-auto">{name}</h3>
+        <Link href={`/places/${id}`} className="mr-auto flex items-center hover:underline w-full">
+          <h3 className="text-xl font-bold">{name}</h3>
+          <IconLink size={20} className="stroke-neutral-500 ml-2" />
+        </Link>
         <BurgersDisplay stars={stars?.data || []} isLoading={isLoadingStars} isError={isErrorStars} />
         <div className="flex gap-2 items-center ml-4">
-          <IconMessage2 size={20} className="stroke-neutral-500" />
+          <IconMessage2 size={20} className="stroke-neutral-500 dark:stroke-neutral-400" />
           {isLoadingCountComments && <Skeleton className="w-5 h-5" />}
           {isErrorCountComments && '0'}
           {!isLoadingCountComments && !isErrorCountComments && countComments?.data?.length}
@@ -55,16 +59,15 @@ export const Place = ({ id, name, description, link }: { id: string, name: strin
 }
 
 const BurgersDisplay = ({ stars, isLoading, isError }: { stars: any, isLoading: boolean, isError: boolean }) => {
-
   if (isLoading || isError) {
     return (
       <div className="flex gap-2 items-center">
         <div className="flex">
-          <IconBurger size={20} color="gray" />
-          <IconBurger size={20} color="gray" />
-          <IconBurger size={20} color="gray" />
-          <IconBurger size={20} color="gray" />
-          <IconBurger size={20} color="gray" />
+          <IconBurger size={20} className="stroke-neutral-500 dark:stroke-neutral-400" />
+          <IconBurger size={20} className="stroke-neutral-500 dark:stroke-neutral-400" />
+          <IconBurger size={20} className="stroke-neutral-500 dark:stroke-neutral-400" />
+          <IconBurger size={20} className="stroke-neutral-500 dark:stroke-neutral-400" />
+          <IconBurger size={20} className="stroke-neutral-500 dark:stroke-neutral-400" />
         </div>
         {isLoading && <Skeleton className="w-5 h-5" />}
         {isError && '0'}
@@ -100,7 +103,7 @@ const BurgersDisplay = ({ stars, isLoading, isError }: { stars: any, isLoading: 
         ))}
         {halfBurger}
         {[...Array(emptyBurgers)].map((_, i) => (
-          <IconBurger key={i + fullBurgers} size={20} className="stroke-neutral-500" />
+          <IconBurger key={i + fullBurgers} size={20} className="stroke-neutral-500 dark:stroke-neutral-400" />
         ))}
       </div>
       <span>{Number.isInteger(totalStars) ? totalStars : totalStars.toFixed(2)}</span>
