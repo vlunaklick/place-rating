@@ -5,6 +5,7 @@ import { Button } from "../ui/button"
 import {IconBrandGoogle, IconFidgetSpinner } from '@tabler/icons-react'
 import useSupabaseClient from "@/lib/supabase/client"
 import { useState } from "react"
+import { getURL } from "@/lib/get-url-redirect"
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -14,11 +15,15 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
+    setIsLoading(true)
+    
     supabase.auth.signInWithOAuth({ 
       provider: "google",
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+        redirectTo: getURL(),
       }
+    }).then(() => {
+      setIsLoading(false)
     })
   }
 
